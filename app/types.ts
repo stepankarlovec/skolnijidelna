@@ -1,7 +1,12 @@
 export interface FoodDay {
     id: number,
-    date: string,
+    date: PossibleDate|Date,
     options: Food[]
+}
+
+export interface PossibleDate{
+    seconds: number,
+    nanoseconds: number,
 }
 
 export interface Food{

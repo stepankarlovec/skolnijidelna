@@ -1,8 +1,14 @@
+"use client";
+import {useAuthState} from "react-firebase-hooks/auth";
+import {auth} from "@/firebase";
+
 const Navbar = () => {
+    const [user, setUser] = useAuthState(auth);
+
     return (
         <nav className="flex items-center justify-between flex-wrap bg-teal-500 p-6">
             <div className="flex items-center flex-shrink-0 text-white mr-6">
-                <span className="font-semibold text-xl tracking-tight">Školní Jídelna</span>
+                <span className="font-semibold text-xl tracking-tight">Fantastická Jídelna</span>
             </div>
             <div className="block lg:hidden">
                 <button
@@ -15,23 +21,21 @@ const Navbar = () => {
             </div>
             <div className="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
                 <div className="text-sm lg:flex-grow">
-                    <a href="#responsive-header"
+                    <a href="/"
                        className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
                         Výběr jídelny
                     </a>
-                    <a href="#responsive-header"
+                    <a href=""
                        className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
                         Nastavení
                     </a>
-                    <a href="#responsive-header"
-                       className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white">
-                        Přihlášení
-                    </a>
                 </div>
+                {user ? <div><p style={{color:"white"}}>{user.displayName}</p></div> :
                 <div>
-                    <a href="#"
+                    <a href="/auth/login"
                        className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0">Přihlášení</a>
                 </div>
+                }
             </div>
         </nav>
     )

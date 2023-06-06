@@ -21,27 +21,6 @@ export default function FoodsTable() {
     if (isLoading) return <p>Načítání...</p>;
     if (!foods) return <p>Žádné data</p>;
 
-    const something = () => {
-        const swag = addFoodDb({
-            id: 1,
-            date: "16.5.2021",
-            options: [
-                {
-                    name: "Kuřecí řízek s bramborovou kaší",
-                    price: 50,
-                    alergens: ["lepek", "mléko"]
-                },
-                {
-                    name: "Smažený sýr s bramborami a tatarkou",
-                    price: 50,
-                    alergens: ["lepek", "mléko"]
-                }]
-        });
-
-        swag.then((res) => {
-            console.log(res);
-        });
-    }
 
     const checkForActive = () => {
         foods.forEach((food) => {
@@ -66,7 +45,6 @@ export default function FoodsTable() {
             {foods.map((food) => (
                 <FoodDuo dayFood={food} key={food.id}></FoodDuo>
             ))}
-            <button onClick={something}>Click me</button>
         </>
     )
 }
