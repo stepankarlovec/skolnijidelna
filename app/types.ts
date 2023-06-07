@@ -1,6 +1,6 @@
 export interface FoodDay {
     id: number,
-    date: PossibleDate|Date,
+    date: any,
     options: Food[]
 }
 
