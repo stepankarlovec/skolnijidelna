@@ -6,7 +6,7 @@ import {useState} from "react";
 
 interface FoodRowProps {
     name: string;
-    index: int;
+    index: number;
     price: number;
     alergens: string[];
     isChecked: boolean;

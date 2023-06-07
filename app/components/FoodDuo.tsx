@@ -22,7 +22,7 @@ export default function FoodDuo(props: { dayFood: FoodDay }) {
                         sx={{marginBottom: '0.6rem'}}>{new Date(props.dayFood.date?.seconds * 1000 + props.dayFood.date?.nanoseconds / 1000000).toLocaleDateString("cs-CS")}</Typography>
             <Box sx={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
                 {props.dayFood.options.map((food: Food, index) => (
-                    <FoodRow key={index} id={index} name={food.name} price={food.price} alergens={food.alergens}
+                    <FoodRow key={index} index={index} name={food.name} price={food.price} alergens={food.alergens}
                              isChecked={selectedFood === food.name}
                              onCheckboxChange={handleCheckboxChange}></FoodRow>
                 ))}
