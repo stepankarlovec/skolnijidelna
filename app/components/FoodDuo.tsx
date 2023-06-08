@@ -6,15 +6,15 @@ import * as React from "react";
 import {FoodDay, Food} from "@/app/types";
 import {useState} from "react";
 
-export default function FoodDuo(props: { dayFood: FoodDay }) {
+export default function FoodDuo(props: { dayFood: FoodDay; onFoodSelectionChange: (selectedFoodIds: string) => void }) {
 
     const [selectedFood, setSelectedFood] = useState<string | null>(null);
 
     const handleCheckboxChange = (name: string) => {
         // Handle checkbox change here
         setSelectedFood(prevSelectedFood => (prevSelectedFood === name ? null : name));
-        console.log(selectedFood);
         // You can store the checkbox state in the component's state or perform any other logic
+        props.onFoodSelectionChange(selectedFood); // Notify the parent component of the selected food IDs
     };
     return (
         <Box component={Paper} sx={{marginY: '1rem', padding: '1rem'}} id={"food-" + String(props.dayFood.id)}>

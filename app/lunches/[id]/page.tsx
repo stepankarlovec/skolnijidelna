@@ -1,6 +1,6 @@
 "use client"
 
-export default function Id(){
+export default function Page(){
     return(
         <div>
             <p>Id</p>

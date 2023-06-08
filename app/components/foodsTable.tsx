@@ -1,13 +1,16 @@
 "use client";
 import * as React from 'react';
+import {useEffect, useState} from 'react';
 import FoodDuo from "@/app/components/FoodDuo";
-import {addFoodDb, getLatestFood} from "@/app/api/food";
+import {getLatestFood} from "@/app/api/food";
 import {FoodDay} from "@/app/types";
-import {useEffect, useState} from "react";
+import Button from "@mui/material/Button";
 
 export default function FoodsTable() {
     const [foods, setFoods] = useState<FoodDay[]>([]);
     const [isLoading, setLoading] = useState(false);
+    const [selectedCheckboxes,setSelectedCheckboxes] = useState<string[]>([]); // Ref to store the IDs of selected checkboxes
+
 
     useEffect(() => {
         setLoading(true);
@@ -18,32 +21,25 @@ export default function FoodsTable() {
             })
     }, []);
 
+    const handleFoodSelectionChange = (selectedFoodIds: string) => {
+        setSelectedCheckboxes([selectedFoodIds,...selectedCheckboxes]); // Update the selected checkboxes IDs
+    };
+
+    const handleSaveSelection = () => {
+        // Perform the necessary actions with the selected IDs (e.g., store them in the database)
+         // Get the IDs of selected checkboxes
+        console.log("Selected Food IDs:", selectedCheckboxes);
+    };
+
     if (isLoading) return <p>Načítání...</p>;
     if (!foods) return <p>Žádné data</p>;
 
 
-    const checkForActive = () => {
-        foods.forEach((food) => {
-            const inputs = document.getElementById("#food-" + String(food.id))?.getElementsByTagName('input');
-            let inputIsActive = false;
-            if (inputs) {
-                for (let i = 0; i < inputs.length - 1; i++) {
-                    if (inputs[i].checked) {
-                        inputIsActive = true;
-                        for (let i = 0; i < inputs.length - 1; i++) {
-                            inputs[i].disabled = true;
-                        }
-                        inputs[i].disabled = false;
-                    }
-                }
-            }
-        });
-    };
-
     return (
         <>
+            <Button variant="outlined" sx={{marginY:"1rem"}} onClick={handleSaveSelection}>Uložit výběr</Button>
             {foods.map((food) => (
-                <FoodDuo dayFood={food} key={food.id}></FoodDuo>
+                <FoodDuo dayFood={food} key={food.id} onFoodSelectionChange={handleFoodSelectionChange}></FoodDuo>
             ))}
         </>
     )

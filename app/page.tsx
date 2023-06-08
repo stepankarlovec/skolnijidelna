@@ -15,26 +15,26 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import {getPlaces} from "@/app/api/places";
+import {useEffect, useState} from "react";
+import fetchAllUsers from "@/app/api/user";
 
-function Copyright() {
-    return (
-        <Typography variant="body2" color="text.secondary" align="center">
-            {'Copyright © '}
-            <Link color="inherit" href="https://mui.com/">
-                Your Website
-            </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
-
-const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-
-// TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
 export default function Album() {
+
+    const [places, setPlaces] = useState<[]>([]);
+    const [isLoading, setLoading] = useState(false);
+
+    useEffect(() => {
+        setLoading(true);
+        getPlaces().then((res:any)=>{
+            setPlaces(res);
+            setLoading(false);
+        })
+    }, []);
+
+
     return (
         <>
             <main>
@@ -69,10 +69,11 @@ export default function Album() {
                     </Container>
                 </Box>
                 <Container sx={{ py: 8 }} maxWidth="md">
-                    {/* End hero unit */}
+                    {!isLoading ?
                     <Grid container spacing={4}>
-                        {cards.map((card) => (
-                            <Grid item key={card} xs={12} sm={6} md={4}>
+                        {places.map((place:any) => (
+                            <Grid item key={place} xs={12} sm={6} md={4}>
+                                <a href={"/lunches/"+place.id}>
                                 <Card
                                     sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
                                 >
@@ -86,20 +87,21 @@ export default function Album() {
                                     />
                                     <CardContent sx={{ flexGrow: 1 }}>
                                         <Typography gutterBottom variant="h5" component="h2">
-                                            Heading
+                                            {place?.name}
                                         </Typography>
                                         <Typography>
-                                            This is a media card. You can use this section to describe the
-                                            content.
+                                            {place?.location}
                                         </Typography>
                                     </CardContent>
                                     <CardActions>
                                         <Button size="small">Prohlédnout</Button>
                                     </CardActions>
                                 </Card>
+                                </a>
                             </Grid>
                         ))}
                     </Grid>
+                    : <div><p>Načítání</p></div>}
                 </Container>
             </main>
 
