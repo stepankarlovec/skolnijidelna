@@ -15,19 +15,10 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import {useEffect, useState} from "react";
+import {getLatestFood} from "@/app/api/food";
+import getAllPlaces from "@/app/api/places";
 
-function Copyright() {
-    return (
-        <Typography variant="body2" color="text.secondary" align="center">
-            {'Copyright © '}
-            <Link color="inherit" href="https://mui.com/">
-                Your Website
-            </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
 
 const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
@@ -35,6 +26,19 @@ const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const defaultTheme = createTheme();
 
 export default function Album() {
+    const [places, setPlaces] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+
+    useEffect(() => {
+        setIsLoading(true);
+        getAllPlaces()
+            .then((res:any) => {
+                setPlaces(res);
+                setIsLoading(false);
+            })
+    }, []);
+
     return (
         <>
             <main>
@@ -69,10 +73,11 @@ export default function Album() {
                     </Container>
                 </Box>
                 <Container sx={{ py: 8 }} maxWidth="md">
-                    {/* End hero unit */}
+                    {!isLoading ?
                     <Grid container spacing={4}>
-                        {cards.map((card) => (
-                            <Grid item key={card} xs={12} sm={6} md={4}>
+                        {places.map((place:any) => (
+                            <Grid item key={place} xs={12} sm={6} md={4}>
+                                <a href={"lunches/"+place.id}>
                                 <Card
                                     sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
                                 >
@@ -86,20 +91,21 @@ export default function Album() {
                                     />
                                     <CardContent sx={{ flexGrow: 1 }}>
                                         <Typography gutterBottom variant="h5" component="h2">
-                                            Heading
+                                            {place?.name}
                                         </Typography>
                                         <Typography>
-                                            This is a media card. You can use this section to describe the
-                                            content.
+                                            {place?.location}
                                         </Typography>
                                     </CardContent>
                                     <CardActions>
                                         <Button size="small">Prohlédnout</Button>
                                     </CardActions>
                                 </Card>
+                                </a>
                             </Grid>
                         ))}
                     </Grid>
+                    : <div><p>načítání</p></div>}
                 </Container>
             </main>
 

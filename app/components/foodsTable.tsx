@@ -1,17 +1,34 @@
 "use client";
 import * as React from 'react';
 import FoodDuo from "@/app/components/FoodDuo";
-import {addFoodDb, getLatestFood} from "@/app/api/food";
+import {addFoodDb, getLatestFood, getLatestFoodFrom} from "@/app/api/food";
 import {FoodDay} from "@/app/types";
 import {useEffect, useState} from "react";
+import {Box} from "@mui/system";
+import Paper from "@mui/material/Paper";
+import {Typography} from "@mui/material";
+import Button from "@mui/material/Button";
 
-export default function FoodsTable() {
+export default function FoodsTable(props: {id:number}) {
     const [foods, setFoods] = useState<FoodDay[]>([]);
     const [isLoading, setLoading] = useState(false);
+    const [selectedCheckboxes, setSelectedCheckboxes] = useState<string[]>([]);
+
+    const handleCheckboxChange = (name: string) => {
+        setSelectedCheckboxes((prevSelectedCheckboxes) => {
+            if (prevSelectedCheckboxes.includes(name)) {
+                // Remove the checkbox from the selected checkboxes
+                return prevSelectedCheckboxes.filter((checkbox) => checkbox !== name);
+            } else {
+                // Add the checkbox to the selected checkboxes
+                return [...prevSelectedCheckboxes, name];
+            }
+        });
+    };
 
     useEffect(() => {
         setLoading(true);
-        getLatestFood()
+        getLatestFoodFrom(Number(props.id))
             .then((res) => {
                 setFoods(res);
                 setLoading(false);
@@ -22,29 +39,23 @@ export default function FoodsTable() {
     if (!foods) return <p>Žádné data</p>;
 
 
-    const checkForActive = () => {
-        foods.forEach((food) => {
-            const inputs = document.getElementById("#food-" + String(food.id))?.getElementsByTagName('input');
-            let inputIsActive = false;
-            if (inputs) {
-                for (let i = 0; i < inputs.length - 1; i++) {
-                    if (inputs[i].checked) {
-                        inputIsActive = true;
-                        for (let i = 0; i < inputs.length - 1; i++) {
-                            inputs[i].disabled = true;
-                        }
-                        inputs[i].disabled = false;
-                    }
-                }
-            }
-        });
-    };
-
     return (
         <>
+            <Button variant="outlined">Uložit výběr</Button>
             {foods.map((food) => (
-                <FoodDuo dayFood={food} key={food.id}></FoodDuo>
+                <FoodDuo dayFood={food} key={food.id} selectedCheckboxes={selectedCheckboxes}
+                         onCheckboxChange={handleCheckboxChange}></FoodDuo>
             ))}
+            {/*
+            <Box component={Paper} sx={{ marginY: "1rem", padding: "1rem" }}>
+                <Typography variant="h5">Selected Checkboxes:</Typography>
+                <ul>
+                    {selectedCheckboxes.map((checkbox) => (
+                        <li key={checkbox}>{checkbox}</li>
+                    ))}
+                </ul>
+            </Box>
+            */}
         </>
     )
 }

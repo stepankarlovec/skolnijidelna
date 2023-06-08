@@ -38,7 +38,8 @@ export async function createNewUserIfUnique(data:any){
                 const docRef = await addDoc(collection(firestore, "users"), {
                     name: data.displayName,
                     email: data.email,
-                    accessToken: data.accessToken
+                    accessToken: data.accessToken,
+                    admin: 0
                 });
                 console.log("Created new user with ID: ", docRef.id);
             }

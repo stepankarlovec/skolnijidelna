@@ -5,6 +5,7 @@ import {Box} from "@mui/system";
 import {useEffect, useState} from "react";
 import Button from "@mui/material/Button";
 import {addFoodDb, getLastCreatedDocument} from "@/app/api/food";
+import getAllPlaces from "@/app/api/places";
 
 interface Meal {
     id: number;
@@ -16,6 +17,19 @@ interface Meal {
 export default function CreateFoodForm(){
     const [meals, setMeals] = useState<Meal[]>([{ id: 0, name: '', price: 0, alergens: '' }]);
     const [date, setDate] = useState(new Date());
+    const [places, setPlaces] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [selectedPlace, setSelectedPlace] = useState("");
+
+
+    useEffect(() => {
+        setIsLoading(true);
+        getAllPlaces()
+            .then((res:any) => {
+                setPlaces(res);
+                setIsLoading(false);
+            })
+    }, []);
 
     const addNewMeal = () => {
 
@@ -30,6 +44,7 @@ export default function CreateFoodForm(){
 
         const swag = addFoodDb({
             id: lastItem+1,
+            placeId: Number(selectedPlace),
             date: date,
             options: prepareMeals
         });
@@ -58,6 +73,12 @@ export default function CreateFoodForm(){
         <div>
             <Box sx={{display:"flex", flexDirection:"column"}}>
             <input type="date" onChange={(e) => setDate(new Date(e.target.value))} style={{ width: '300px' }} />
+            <select  value={selectedPlace}
+                     onChange={(event) => setSelectedPlace(event.target.value)} style={{ width: '300px', border: '1px solid black' }}>
+                {places.map((place:any)=>(
+                    <option key={place} value={place?.id}>{place?.name}</option>
+                ))}
+            </select>
             <a href="#" style={{ display:"flex", justifyContent:"center", width: '50px', color:"red", fontSize:"2rem", border: "1px solid red", padding:"0.1rem" }} onClick={handleAddMeal}>
                 +
             </a>

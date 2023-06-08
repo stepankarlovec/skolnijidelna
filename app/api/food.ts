@@ -1,4 +1,4 @@
-import {collection, addDoc, getDocs, orderBy, limit} from "firebase/firestore";
+import {collection, addDoc, getDocs, orderBy, limit, where} from "firebase/firestore";
 import {firestore} from "@/firebase";
 import {FoodDay} from "@/app/types";
 import {query} from "@firebase/database";
@@ -17,6 +17,20 @@ export async function addFoodDb(data: FoodDay) {
 export async function getLatestFood() {
     const querySnapshot = await getDocs(collection(firestore, "food"));
     let arr:any[] = [];
+    querySnapshot.forEach((doc) => {
+        arr.push(doc.data());
+    });
+    return arr;
+}
+
+export async function getLatestFoodFrom(id: number) {
+    const colRef = collection(firestore, "food");
+    // @ts-ignore
+    const q = query(colRef, where("placeId", "==", id), orderBy("date", "desc"));
+
+    // @ts-ignore
+    const querySnapshot = await getDocs(q);
+    const arr: any[] = [];
     querySnapshot.forEach((doc) => {
         arr.push(doc.data());
     });

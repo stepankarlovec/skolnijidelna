@@ -1,5 +1,6 @@
 export interface FoodDay {
     id: number,
+    placeId: number,
     date: any,
     options: Food[]
 }
