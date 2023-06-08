@@ -23,6 +23,7 @@ export async function getLatestFood() {
     return arr;
 }
 
+// ily
 export async function getLatestFoodFrom(id: number) {
     const colRef = collection(firestore, "food");
     // @ts-ignore
