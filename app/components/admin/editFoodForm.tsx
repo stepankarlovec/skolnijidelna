@@ -4,8 +4,9 @@ import {TextField} from "@mui/material";
 import {Box} from "@mui/system";
 import {useEffect, useState} from "react";
 import Button from "@mui/material/Button";
-import {addFoodDb, getLastCreatedDocument} from "@/app/api/food";
+import {getLastCreatedDocument, updateFoodDb} from "@/app/api/food";
 import getAllPlaces from "@/app/api/places";
+import {FoodDay} from "@/app/types";
 
 interface Meal {
     id: number;
@@ -14,12 +15,26 @@ interface Meal {
     alergens: string;
 }
 
-export default function CreateFoodForm(){
-    const [meals, setMeals] = useState<Meal[]>([{ id: 0, name: '', price: 0, alergens: '' }]);
-    const [date, setDate] = useState(new Date());
+export default function EditFoodForm(props: {food:FoodDay}){
+    const prepareFoodToMealConvert = (food:FoodDay) => {
+        const convertedFood = food.options.map((option)=>{
+            return { id: option.id, name: option.name, price: option.price, alergens: option.alergens.join(',')}
+        })
+        return convertedFood;
+    }
+
+    const preparePreviousDate = (food:FoodDay) => {
+        let curDate = new Date(food.date.toDate());
+        const year = curDate.getFullYear().toString();
+        const month = (curDate.getMonth()+1).toString().padStart(2,'0');
+        const day = curDate.getDate().toString().padStart(2,'0');
+        return year + "-" + month + "-" + day;
+    }
+    const [meals, setMeals] = useState<Meal[]>(prepareFoodToMealConvert(props.food));
+    const [date, setDate] = useState<any>(preparePreviousDate(props.food));
     const [places, setPlaces] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [selectedPlace, setSelectedPlace] = useState("");
+    const [selectedPlace, setSelectedPlace] = useState(props.food.placeId.toString());
 
 
     useEffect(() => {
@@ -31,7 +46,7 @@ export default function CreateFoodForm(){
             })
     }, []);
 
-    const addNewMeal = () => {
+    const editCurrentMeal = () => {
 
         let lastItem = 0;
         getLastCreatedDocument("food").then((data)=>{
@@ -42,15 +57,15 @@ export default function CreateFoodForm(){
             return { id: meal.id, name: meal.name, price: meal.price, alergens: meal.alergens.split(',')}
         })
 
-        const swag = addFoodDb({
+        const swag = updateFoodDb({
             id: lastItem+1,
             placeId: Number(selectedPlace),
-            date: date,
+            date: preparePreviousDate(props.food) === date ? new Date(date) : date,
             options: prepareMeals
         });
 
         swag.then((res) => {
-            alert("Úspěšně přidáno");
+            alert("Úspěšně upraveno");
         });
     }
 
@@ -72,16 +87,16 @@ export default function CreateFoodForm(){
     return (
         <div>
             <Box sx={{display:"flex", flexDirection:"column"}}>
-            <input type="date" onChange={(e) => setDate(new Date(e.target.value))} style={{ width: '300px' }} />
-            <select  value={selectedPlace}
-                     onChange={(event) => setSelectedPlace(event.target.value)} style={{ width: '300px', border: '1px solid black' }}>
-                {places.map((place:any)=>(
-                    <option key={place} value={place?.id}>{place?.name}</option>
-                ))}
-            </select>
-            <a href="#" style={{ display:"flex", justifyContent:"center", width: '50px', color:"red", fontSize:"2rem", border: "1px solid red", padding:"0.1rem" }} onClick={handleAddMeal}>
-                +
-            </a>
+                <input type="date" defaultValue={date} onChange={(e) => setDate(new Date(e.target.value))} style={{ width: '300px' }} />
+                <select  value={selectedPlace}
+                         onChange={(event) => setSelectedPlace(event.target.value)} style={{ width: '300px', border: '1px solid black' }}>
+                    {places.map((place:any)=>(
+                        <option key={place.id} value={place?.id}>{place?.name}</option>
+                    ))}
+                </select>
+                <a href="#" style={{ display:"flex", justifyContent:"center", width: '50px', color:"red", fontSize:"2rem", border: "1px solid red", padding:"0.1rem" }} onClick={handleAddMeal}>
+                    +
+                </a>
             </Box>
             <div style={{ display: 'flex', gap: '1rem' }}>
                 {meals.map((meal, index) => (
@@ -115,7 +130,7 @@ export default function CreateFoodForm(){
                     </div>
                 ))}
             </div>
-            <Button sx={{marginTop:"1rem"}} variant="outlined" onClick={addNewMeal}>Přidat</Button>
+            <Button sx={{marginTop:"1rem"}} variant="outlined" onClick={editCurrentMeal}>Upravit</Button>
         </div>
     );
 }

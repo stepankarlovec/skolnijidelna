@@ -11,6 +11,7 @@ export interface PossibleDate{
 }
 
 export interface Food{
+    id: number,
     name: string,
     price: number,
     alergens: string[],
