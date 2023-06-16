@@ -8,22 +8,44 @@ import {Box} from "@mui/system";
 import Paper from "@mui/material/Paper";
 import {Typography} from "@mui/material";
 import Button from "@mui/material/Button";
+import {useAuthState} from "react-firebase-hooks/auth";
+import {auth} from "@/firebase";
+import {createOrder, getUsersOrders} from "@/app/api/order";
 
 export default function FoodsTable(props: {id:number}) {
     const [foods, setFoods] = useState<FoodDay[]>([]);
     const [isLoading, setLoading] = useState(false);
-    const [selectedCheckboxes, setSelectedCheckboxes] = useState<string[]>([]);
+    const [selectedCheckboxes, setSelectedCheckboxes] = useState<[]>([]);
+    const [user, setUser] = useAuthState(auth);
 
-    const handleCheckboxChange = (name: string) => {
-        setSelectedCheckboxes((prevSelectedCheckboxes) => {
-            if (prevSelectedCheckboxes.includes(name)) {
-                // Remove the checkbox from the selected checkboxes
-                return prevSelectedCheckboxes.filter((checkbox) => checkbox !== name);
-            } else {
-                // Add the checkbox to the selected checkboxes
-                return [...prevSelectedCheckboxes, name];
-            }
+
+    const saveSelection = () => {
+        createOrder(selectedCheckboxes, Number(props.id), user?.uid).then(r => {
+            console.log(r);
+            alert("Výběr uložen.");
         });
+    }
+
+    const handleCheckboxChange = (id:any, food: any) => {
+        // @ts-ignore
+        setSelectedCheckboxes((prevSelected: any) => {
+            const meow = prevSelected.map((el: any) => {
+                if (el.food !== food) {
+                    return el;
+                }
+            })
+            const meow2 = meow.filter((el: any) => el !== undefined);
+            const meow3 = meow2.filter((el: any) => {return el.food !== null});
+            const swag = meow3.map((el: any) => {
+                if (el.id !== id) {
+                    return el;
+                }
+            })
+            const meow4 = swag.filter((el: any) => el !== undefined);
+            const final = meow4.filter((el: any) => el.food !== null);
+            return [...final, {id: id, food: food}];
+        });
+        console.log(selectedCheckboxes);
     };
 
     useEffect(() => {
@@ -31,31 +53,43 @@ export default function FoodsTable(props: {id:number}) {
         getLatestFoodFrom(Number(props.id))
             .then((res) => {
                 setFoods(res);
-                setLoading(false);
             })
+        if(user && user.uid) {
+            getUsersOrders(user?.uid, Number(props.id)).then(r => {
+                console.log(r);
+                // @ts-ignore
+                setSelectedCheckboxes(r);
+                setLoading(false);
+            });
+        }
     }, []);
 
-    if (isLoading) return <p>Načítání...</p>;
-    if (!foods) return <p>Žádné data</p>;
+    if (!foods) return <div><p>Žádné data</p></div>;
 
 
     return (
         <>
-            <Button variant="outlined">Uložit výběr</Button>
+            {isLoading ? <div><p>Načítání...</p></div> :
+            <div>
+            {user ?
+            <Button variant="outlined" sx={{marginY:"1rem"}} onClick={saveSelection}>Uložit výběr</Button>
+            : <div><p style={{marginTop:"1rem", marginBottom:"1rem"}}>Pro výběr obědů se musíte <a href="/auth/login" style={{color:"blue"}}>přihlásit</a>.</p></div>}
             {foods.map((food) => (
                 <FoodDuo dayFood={food} key={food.id} selectedCheckboxes={selectedCheckboxes}
                          onCheckboxChange={handleCheckboxChange}></FoodDuo>
             ))}
-            {/*
+
             <Box component={Paper} sx={{ marginY: "1rem", padding: "1rem" }}>
                 <Typography variant="h5">Selected Checkboxes:</Typography>
                 <ul>
-                    {selectedCheckboxes.map((checkbox) => (
-                        <li key={checkbox}>{checkbox}</li>
+                    {selectedCheckboxes.map((checkbox:any, index) => (
+                        <li key={index}>{checkbox.food}</li>
                     ))}
                 </ul>
             </Box>
-            */}
+
+            </div>
+        }
         </>
     )
 }

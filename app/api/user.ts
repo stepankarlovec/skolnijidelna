@@ -50,6 +50,10 @@ export async function createNewUserIfUnique(data:any){
     }
 }
 
+export async function isUserInAdminList(){
+
+}
+
 
 
 

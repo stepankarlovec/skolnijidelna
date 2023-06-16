@@ -8,4 +8,8 @@ export default function userIsAdmin(){
     if (loading) return false;
     if (error) return false;
     if (!user) return false;
+
+    isUserInAdminList(user.uid).then((res) => {
+
+    });
 }

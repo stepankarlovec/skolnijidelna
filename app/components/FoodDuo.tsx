@@ -4,13 +4,13 @@ import Paper from "@mui/material/Paper";
 import {Typography} from "@mui/material";
 import * as React from "react";
 import {FoodDay, Food} from "@/app/types";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 
 interface FoodDuoProps {
     dayFood: FoodDay;
     selectedCheckboxes: string[];
-    onCheckboxChange: (name: string) => void;
+    onCheckboxChange: (id:any,food:any) => void;
 }
 
 export default function FoodDuo(props: FoodDuoProps){
@@ -19,11 +19,15 @@ export default function FoodDuo(props: FoodDuoProps){
 
     const handleCheckboxChange = (name: string) => {
         // Handle checkbox change here
-        props.onCheckboxChange(name);
         setSelectedFood(prevSelectedFood => (prevSelectedFood === name ? null : name));
-        console.log(selectedFood);
         // You can store the checkbox state in the component's state or perform any other logic
     };
+
+    useEffect(() => {
+        console.log(selectedFood);
+        props.onCheckboxChange(props.dayFood.id, selectedFood);
+    },[selectedFood]);
+
     return (
         <Box component={Paper} sx={{marginY: '1rem', padding: '1rem'}} id={"food-" + String(props.dayFood.id)}>
             <Typography variant="h5"

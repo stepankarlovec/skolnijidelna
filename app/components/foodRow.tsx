@@ -33,10 +33,10 @@ export default function FoodRow(props: FoodRowProps) {
 
     return (
         <Box sx={{display: 'flex', width:'100', justifyContent:'space-around', marginY: '0.5rem'}}>
-            <p>{props.name}</p>
-            <input type={"checkbox"} checked={props.isChecked} onChange={handleCheckboxChange} ></input>
-            <p>{props.price} CZK</p>
-            <button aria-describedby={id} type="button" onClick={handleClick}>
+            <p style={{flex:"1"}}>{props.name}</p>
+            <input style={{flex:"1"}} type={"checkbox"} checked={props.isChecked} onChange={handleCheckboxChange} ></input>
+            <p style={{flex:"1"}}>{props.price} CZK</p>
+            <button style={{flex:"1"}} aria-describedby={id} type="button" onClick={handleClick}>
                 {open ? 'Zavřít alergeny' : 'Zobrazit alergeny'}
             </button>
             <Popper id={id} open={open} anchorEl={anchorEl} transition>
