@@ -61,6 +61,8 @@ export default function FoodsTable(props: {id:number}) {
                 setSelectedCheckboxes(r);
                 setLoading(false);
             });
+        }else{
+            setLoading(false);
         }
     }, []);
 
