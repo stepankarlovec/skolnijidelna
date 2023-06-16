@@ -16,7 +16,8 @@ export default function FoodsTable(props: {id:number}) {
     const [foods, setFoods] = useState<FoodDay[]>([]);
     const [isLoading, setLoading] = useState(false);
     const [selectedCheckboxes, setSelectedCheckboxes] = useState<[]>([]);
-    const [user, setUser] = useAuthState(auth);
+    const [user, setUser] = useAuthState(auth);4
+    const [fetchedOrders, setfetchedOrders] = useState<[]>([]);
 
 
     const saveSelection = () => {
@@ -58,7 +59,7 @@ export default function FoodsTable(props: {id:number}) {
             getUsersOrders(user?.uid, Number(props.id)).then(r => {
                 console.log(r);
                 // @ts-ignore
-                setSelectedCheckboxes(r);
+                setfetchedOrders(r);
                 setLoading(false);
             });
         }else{
@@ -68,6 +69,17 @@ export default function FoodsTable(props: {id:number}) {
 
     if (!foods) return <div><p>Žádné data</p></div>;
 
+    const renderFetchedOrders = () => {
+        return(
+            fetchedOrders.map((order:any)=>{
+                return(
+                    <div key={order?.foodId}>
+                        <p>{order?.choice}</p>
+                    </div>
+                )
+            })
+        )
+    }
 
     return (
         <>
@@ -89,6 +101,9 @@ export default function FoodsTable(props: {id:number}) {
                     ))}
                 </ul>
             </Box>
+                <hr></hr>
+                <h1 style={{fontSize:"1.5rem"}}>Objednané pokrmy:</h1>
+                {renderFetchedOrders()}
 
             </div>
         }
