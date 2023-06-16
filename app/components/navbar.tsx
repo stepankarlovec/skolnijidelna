@@ -25,7 +25,7 @@ const Navbar = () => {
                        className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
                         Výběr jídelny
                     </a>
-                    <a href=""
+                    <a href="/settings"
                        className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
                         Nastavení
                     </a>
